@@ -38,6 +38,7 @@ const Layout: FC<Props> = ({ children }) => {
         flexDirection="column"
         position="relative"
         borderRadius="3xl"
+        padding={6}
       >
         <IconButton
           aria-label="Menu Colapse"
