@@ -1,10 +1,7 @@
 import {
   Box,
   Flex,
-  Grid,
-  GridItem,
   IconButton,
-  Select,
   Table as ChakraTable,
   TableContainer,
   Tbody,
@@ -14,18 +11,7 @@ import {
   Tooltip,
   Tr,
   Input,
-  ListItem,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  Text,
   useDisclosure,
-  UnorderedList,
-  Button,
 } from "@chakra-ui/react";
 
 import {
@@ -41,13 +27,9 @@ import {
 } from "@tanstack/react-table";
 import { FC, useMemo, useState } from "react";
 import { IData } from "../../interface";
-import {
-  ArrowLeftIcon,
-  ArrowRightIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  InfoIcon,
-} from "@chakra-ui/icons";
+import { InfoIcon } from "@chakra-ui/icons";
+import { ModalInstruction } from "../modal/modal-instruction";
+import { Pagination } from "./pagination";
 
 interface Props {
   data: IData[];
@@ -152,8 +134,6 @@ export const Table: FC<Props> = ({
     debugTable: true,
   });
 
-  const paginationOptions = useMemo(() => [10, 20, 30, 40, 50], []);
-
   return (
     <>
       {table.getHeaderGroups().map((headerGroup) =>
@@ -232,109 +212,9 @@ export const Table: FC<Props> = ({
             ))}
           </Tbody>
         </ChakraTable>
-        <Grid templateColumns="repeat(3, 1fr)" gap={2} marginTop={3}>
-          <GridItem w="100%">
-            <Flex gap={2}>
-              {table.getCanPreviousPage() && (
-                <>
-                  <Tooltip label={`Ir a la primera página`}>
-                    <IconButton
-                      aria-label="previous all page"
-                      icon={<ArrowLeftIcon />}
-                      onClick={() => table.setPageIndex(0)}
-                      disabled={!table.getCanPreviousPage()}
-                    />
-                  </Tooltip>
-                  <Tooltip label={`Ir a la  página anterior`}>
-                    <IconButton
-                      aria-label="previous page"
-                      icon={<ChevronLeftIcon />}
-                      onClick={() => table.previousPage()}
-                      disabled={!table.getCanPreviousPage()}
-                    />
-                  </Tooltip>
-                </>
-              )}
+        <Pagination table={table} />
 
-              {table.getCanNextPage() && (
-                <>
-                  <Tooltip label={`Ir a la siguiente página`}>
-                    <IconButton
-                      aria-label="next page"
-                      icon={<ChevronRightIcon />}
-                      onClick={() => table.nextPage()}
-                    />
-                  </Tooltip>
-                  <Tooltip label={`Ir a la página final`}>
-                    <IconButton
-                      aria-label="next all page"
-                      icon={<ArrowRightIcon />}
-                      onClick={() =>
-                        table.setPageIndex(table.getPageCount() - 1)
-                      }
-                    />
-                  </Tooltip>
-                </>
-              )}
-            </Flex>
-          </GridItem>
-          <GridItem w="100%">
-            <Text fontSize={14}>Page</Text>
-
-            <Text fontWeight="bold" fontSize={14}>
-              {table.getState().pagination.pageIndex + 1} of{" "}
-              {table.getPageCount()}
-            </Text>
-          </GridItem>
-          <GridItem w="100%">
-            <Select
-              value={table.getState().pagination.pageSize}
-              onChange={(e) => {
-                table.setPageSize(Number(e.target.value));
-              }}
-            >
-              {paginationOptions.map((pageSize) => (
-                <option key={pageSize} value={pageSize}>
-                  Show {pageSize}
-                </option>
-              ))}
-            </Select>
-          </GridItem>
-        </Grid>
-
-        <Modal isOpen={isOpen} onClose={onClose}>
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader>Instrucciones de uso</ModalHeader>
-            <ModalCloseButton />
-            <ModalBody>
-              <UnorderedList>
-                <ListItem>
-                  En la primera fila al hacer click en la palabra en negrita se
-                  reordena la lista en manera ascendente y descendente{" "}
-                </ListItem>
-                <ListItem>
-                  Al presionar los botones en la columna detalles sale
-                  información adicional del país o el estado por medio de un
-                  modal
-                </ListItem>
-                <ListItem>
-                  En la parte inferior izquierda se encuentran los botos de
-                  pasar de página, de una en una o pasar al final o al principio
-                </ListItem>
-                <ListItem>
-                  En la parte inferior derecha se encuentra la cantidad de
-                  resultados que se quiere mostrar por página{" "}
-                </ListItem>
-              </UnorderedList>
-            </ModalBody>
-            <ModalFooter>
-              <Button colorScheme="teal" mr={3} onClick={onClose}>
-                Close
-              </Button>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
+        <ModalInstruction isOpen={isOpen} onClose={onClose} />
       </TableContainer>
     </>
   );
