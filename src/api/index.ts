@@ -33,3 +33,27 @@ export const getCountry = async (iso2: string) => {
     console.error(error);
   }
 };
+
+export const getStates = async () => {
+  try {
+    const response = await axios({
+      url: `${URL}/states`,
+      ...config,
+    });
+    return response.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const getState = async (countryCode: string, iso2: string) => {
+  try {
+    const response = await axios({
+      url: `${URL}/countries/${countryCode}/states/${iso2}`,
+      ...config,
+    });
+    return response.data;
+  } catch (error) {
+    console.error(error);
+  }
+};

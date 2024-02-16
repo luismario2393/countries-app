@@ -20,20 +20,20 @@ import { BiWorld } from "react-icons/bi";
 import { TbWorldLatitude, TbWorldLongitude, TbWorld } from "react-icons/tb";
 import { MdOutlinePhone } from "react-icons/md";
 import { FC } from "react";
-import { ICountry } from "../../interface";
+import { IDataSingle } from "../../interface";
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  country: ICountry | null;
+  data: IDataSingle | null;
 }
 
-export const Modal: FC<Props> = ({ isOpen, onClose, country }) => {
+export const Modal: FC<Props> = ({ isOpen, onClose, data }) => {
   return (
     <ChakraModal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Información adicional sobre {country?.name}</ModalHeader>
+        <ModalHeader>Información adicional sobre {data?.name}</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <List spacing={3}>
@@ -44,33 +44,37 @@ export const Modal: FC<Props> = ({ isOpen, onClose, country }) => {
                   Nombre:
                 </Text>{" "}
                 <Text fontSize={14}>
-                  {country?.name} - {country?.native}
+                  {data?.name} {data?.native && `- ${data?.native}`}
                 </Text>
               </Flex>
             </ListItem>
 
-            <ListItem>
-              <Flex alignItems={"center"} gap={1}>
-                <ListIcon as={FaCity} color="teal.300" />
-                <Text fontWeight="bold" fontSize={14}>
-                  Capital:
-                </Text>{" "}
-                <Text fontSize={14}>{country?.capital}</Text>
-              </Flex>
-            </ListItem>
+            {data?.capital && (
+              <ListItem>
+                <Flex alignItems={"center"} gap={1}>
+                  <ListIcon as={FaCity} color="teal.300" />
+                  <Text fontWeight="bold" fontSize={14}>
+                    Capital:
+                  </Text>{" "}
+                  <Text fontSize={14}>{data?.capital}</Text>
+                </Flex>
+              </ListItem>
+            )}
 
-            <ListItem>
-              <Flex alignItems={"center"} gap={1}>
-                <ListIcon as={HiOutlineCurrencyDollar} color="teal.300" />
-                <Text fontWeight="bold" fontSize={14}>
-                  Divisa:
-                </Text>{" "}
-                <Text fontSize={14}>
-                  {country?.currency_symbol} - {country?.currency} -{" "}
-                  {country?.currency_name}
-                </Text>
-              </Flex>
-            </ListItem>
+            {data?.currency_symbol && (
+              <ListItem>
+                <Flex alignItems={"center"} gap={1}>
+                  <ListIcon as={HiOutlineCurrencyDollar} color="teal.300" />
+                  <Text fontWeight="bold" fontSize={14}>
+                    Divisa:
+                  </Text>{" "}
+                  <Text fontSize={14}>
+                    {data?.currency_symbol} - {data?.currency} -{" "}
+                    {data?.currency_name}
+                  </Text>
+                </Flex>
+              </ListItem>
+            )}
 
             <ListItem>
               <Flex alignItems={"center"} gap={1}>
@@ -79,7 +83,7 @@ export const Modal: FC<Props> = ({ isOpen, onClose, country }) => {
                   Iso:
                 </Text>{" "}
                 <Text fontSize={14}>
-                  {country?.iso2} - {country?.iso3}
+                  {data?.iso2} {data?.iso3 && `- ${data?.iso3}`}
                 </Text>
               </Flex>
             </ListItem>
@@ -90,7 +94,7 @@ export const Modal: FC<Props> = ({ isOpen, onClose, country }) => {
                 <Text fontWeight="bold" fontSize={14}>
                   Latitud:
                 </Text>{" "}
-                <Text fontSize={14}>{country?.latitude}</Text>
+                <Text fontSize={14}>{data?.latitude}</Text>
               </Flex>
             </ListItem>
 
@@ -100,7 +104,7 @@ export const Modal: FC<Props> = ({ isOpen, onClose, country }) => {
                 <Text fontWeight="bold" fontSize={14}>
                   Longitud:
                 </Text>{" "}
-                <Text fontSize={14}>{country?.longitude}</Text>
+                <Text fontSize={14}>{data?.longitude}</Text>
               </Flex>
             </ListItem>
 
@@ -110,29 +114,35 @@ export const Modal: FC<Props> = ({ isOpen, onClose, country }) => {
                 <Text fontWeight="bold" fontSize={14}>
                   Código de país:
                 </Text>{" "}
-                <Text fontSize={14}>{country?.phonecode}</Text>
+                <Text fontSize={14}>
+                  {data?.phonecode ?? data?.country_code}
+                </Text>
               </Flex>
             </ListItem>
 
-            <ListItem>
-              <Flex alignItems={"center"} gap={1}>
-                <ListIcon as={FaMountainCity} color="teal.300" />
-                <Text fontWeight="bold" fontSize={14}>
-                  Region:
-                </Text>{" "}
-                <Text fontSize={14}>{country?.region}</Text>
-              </Flex>
-            </ListItem>
+            {data?.region && (
+              <ListItem>
+                <Flex alignItems={"center"} gap={1}>
+                  <ListIcon as={FaMountainCity} color="teal.300" />
+                  <Text fontWeight="bold" fontSize={14}>
+                    Region:
+                  </Text>{" "}
+                  <Text fontSize={14}>{data?.region}</Text>
+                </Flex>
+              </ListItem>
+            )}
 
-            <ListItem>
-              <Flex alignItems={"center"} gap={1}>
-                <ListIcon as={FaTreeCity} color="teal.300" />
-                <Text fontWeight="bold" fontSize={14}>
-                  Subregion:
-                </Text>{" "}
-                <Text fontSize={14}>{country?.subregion}</Text>
-              </Flex>
-            </ListItem>
+            {data?.subregion && (
+              <ListItem>
+                <Flex alignItems={"center"} gap={1}>
+                  <ListIcon as={FaTreeCity} color="teal.300" />
+                  <Text fontWeight="bold" fontSize={14}>
+                    Subregion:
+                  </Text>{" "}
+                  <Text fontSize={14}>{data?.subregion}</Text>
+                </Flex>
+              </ListItem>
+            )}
           </List>
         </ModalBody>
         <ModalFooter>

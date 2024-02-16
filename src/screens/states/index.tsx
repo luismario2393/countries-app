@@ -1,12 +1,21 @@
-import { Text } from "@chakra-ui/react";
-import { Layout } from "../../components";
+import { Spinner, useDisclosure } from "@chakra-ui/react";
+import { Layout, Table, Modal } from "../../components";
+import { useCountries } from "../../context";
 
 const States = () => {
+  const { states, state, loading, fetchState } = useCountries();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   return (
     <Layout>
-      <Text fontSize={100} color="gray.300">
-        Main
-      </Text>
+      {loading ? (
+        <Spinner size="xl" />
+      ) : (
+        <>
+          <Table data={states} onOpen={onOpen} fetchState={fetchState} />
+          <Modal isOpen={isOpen} onClose={onClose} data={state} />
+        </>
+      )}
     </Layout>
   );
 };

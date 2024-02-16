@@ -1,10 +1,12 @@
-export interface ICountries {
+export interface IData {
   id: number;
   iso2: string;
   name: string;
+  country_id?: number;
+  country_code?: string;
 }
 
-export interface ICountry extends ICountries {
+export interface IDataSingle extends IData {
   capital: string;
   currency: string;
   currency_name: string;

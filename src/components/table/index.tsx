@@ -9,12 +9,23 @@ import {
   TableContainer,
   Tbody,
   Td,
-  Text,
   Th,
   Thead,
   Tooltip,
   Tr,
   Input,
+  ListItem,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Text,
+  useDisclosure,
+  UnorderedList,
+  Button,
 } from "@chakra-ui/react";
 
 import {
@@ -29,7 +40,7 @@ import {
   SortingState,
 } from "@tanstack/react-table";
 import { FC, useMemo, useState } from "react";
-import { ICountries } from "../../interface";
+import { IData } from "../../interface";
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
@@ -39,19 +50,26 @@ import {
 } from "@chakra-ui/icons";
 
 interface Props {
-  countries: ICountries[];
+  data: IData[];
   onOpen: () => void;
-  fetchCountry: (iso2: string) => Promise<void>;
+  fetchCountry?: (iso2: string) => Promise<void>;
+  fetchState?: (countryCode: string, iso2: string) => Promise<void>;
 }
 
-export const Table: FC<Props> = ({ countries, onOpen, fetchCountry }) => {
+export const Table: FC<Props> = ({
+  data,
+  onOpen,
+  fetchCountry,
+  fetchState,
+}) => {
   const [sorting, setSorting] = useState<SortingState>([]);
+  const { isOpen, onOpen: useOnOpen, onClose } = useDisclosure();
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
   });
 
-  const columns = useMemo<ColumnDef<ICountries>[]>(
+  const columns = useMemo<ColumnDef<IData>[]>(
     () => [
       {
         accessorKey: "id",
@@ -70,7 +88,9 @@ export const Table: FC<Props> = ({ countries, onOpen, fetchCountry }) => {
         header: () => {
           return (
             <Tooltip label="Click para reordenar">
-              <span>Nombre de países</span>
+              <span>
+                {fetchCountry ? "Nombre de países" : "Nombre de estados"}
+              </span>
             </Tooltip>
           );
         },
@@ -97,20 +117,27 @@ export const Table: FC<Props> = ({ countries, onOpen, fetchCountry }) => {
             <IconButton
               aria-label="vew details"
               icon={<InfoIcon />}
-              onClick={() =>
-                fetchCountry(info.row.original.iso2).finally(onOpen)
-              }
+              onClick={() => {
+                fetchCountry &&
+                  fetchCountry(info.row.original.iso2).finally(onOpen);
+
+                fetchState &&
+                  fetchState(
+                    info.row.original.country_code ?? "",
+                    info.row.original.iso2
+                  ).finally(onOpen);
+              }}
             />
           </Tooltip>
         ),
         footer: (props) => props.column.id,
       },
     ],
-    [fetchCountry, onOpen]
+    [fetchCountry, onOpen, fetchState]
   );
 
   const table = useReactTable({
-    data: countries,
+    data: data,
     columns,
     state: {
       sorting,
@@ -129,22 +156,32 @@ export const Table: FC<Props> = ({ countries, onOpen, fetchCountry }) => {
 
   return (
     <>
-      {table
-        .getHeaderGroups()
-        .map((headerGroup) =>
-          headerGroup.headers.map((header) =>
-            header.column.getCanFilter() && header.id === "name" ? (
+      {table.getHeaderGroups().map((headerGroup) =>
+        headerGroup.headers.map((header) =>
+          header.column.getCanFilter() && header.id === "name" ? (
+            <Flex gap={4}>
+              <Tooltip label={`Instrucciones de uso`}>
+                <IconButton
+                  aria-label="instructions"
+                  icon={<InfoIcon />}
+                  onClick={useOnOpen}
+                />
+              </Tooltip>
               <Input
                 key={`${header.id} - ${header.column.id}`}
-                width={"50%"}
                 type="text"
                 value={(header.column.getFilterValue() ?? "") as string}
                 onChange={(e) => header.column.setFilterValue(e.target.value)}
-                placeholder={`Busca el país por su nombre`}
+                placeholder={`${
+                  fetchCountry
+                    ? "Busca el país por su nombre"
+                    : "Busca el estado por su nombre"
+                }`}
               />
-            ) : null
-          )
-        )}
+            </Flex>
+          ) : null
+        )
+      )}
       <TableContainer
         overflowY={table.getRowModel().rows.length > 10 ? "scroll" : "hidden"}
         w={"80%"}
@@ -200,33 +237,43 @@ export const Table: FC<Props> = ({ countries, onOpen, fetchCountry }) => {
             <Flex gap={2}>
               {table.getCanPreviousPage() && (
                 <>
-                  <IconButton
-                    aria-label="previous all page"
-                    icon={<ArrowLeftIcon />}
-                    onClick={() => table.setPageIndex(0)}
-                    disabled={!table.getCanPreviousPage()}
-                  />
-                  <IconButton
-                    aria-label="previous page"
-                    icon={<ChevronLeftIcon />}
-                    onClick={() => table.previousPage()}
-                    disabled={!table.getCanPreviousPage()}
-                  />
+                  <Tooltip label={`Ir a la primera página`}>
+                    <IconButton
+                      aria-label="previous all page"
+                      icon={<ArrowLeftIcon />}
+                      onClick={() => table.setPageIndex(0)}
+                      disabled={!table.getCanPreviousPage()}
+                    />
+                  </Tooltip>
+                  <Tooltip label={`Ir a la  página anterior`}>
+                    <IconButton
+                      aria-label="previous page"
+                      icon={<ChevronLeftIcon />}
+                      onClick={() => table.previousPage()}
+                      disabled={!table.getCanPreviousPage()}
+                    />
+                  </Tooltip>
                 </>
               )}
 
               {table.getCanNextPage() && (
                 <>
-                  <IconButton
-                    aria-label="next page"
-                    icon={<ChevronRightIcon />}
-                    onClick={() => table.nextPage()}
-                  />
-                  <IconButton
-                    aria-label="next all page"
-                    icon={<ArrowRightIcon />}
-                    onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-                  />
+                  <Tooltip label={`Ir a la siguiente página`}>
+                    <IconButton
+                      aria-label="next page"
+                      icon={<ChevronRightIcon />}
+                      onClick={() => table.nextPage()}
+                    />
+                  </Tooltip>
+                  <Tooltip label={`Ir a la página final`}>
+                    <IconButton
+                      aria-label="next all page"
+                      icon={<ArrowRightIcon />}
+                      onClick={() =>
+                        table.setPageIndex(table.getPageCount() - 1)
+                      }
+                    />
+                  </Tooltip>
                 </>
               )}
             </Flex>
@@ -254,6 +301,40 @@ export const Table: FC<Props> = ({ countries, onOpen, fetchCountry }) => {
             </Select>
           </GridItem>
         </Grid>
+
+        <Modal isOpen={isOpen} onClose={onClose}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>Instrucciones de uso</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <UnorderedList>
+                <ListItem>
+                  En la primera fila al hacer click en la palabra en negrita se
+                  reordena la lista en manera ascendente y descendente{" "}
+                </ListItem>
+                <ListItem>
+                  Al presionar los botones en la columna detalles sale
+                  información adicional del país o el estado por medio de un
+                  modal
+                </ListItem>
+                <ListItem>
+                  En la parte inferior izquierda se encuentran los botos de
+                  pasar de página, de una en una o pasar al final o al principio
+                </ListItem>
+                <ListItem>
+                  En la parte inferior derecha se encuentra la cantidad de
+                  resultados que se quiere mostrar por página{" "}
+                </ListItem>
+              </UnorderedList>
+            </ModalBody>
+            <ModalFooter>
+              <Button colorScheme="teal" mr={3} onClick={onClose}>
+                Close
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
       </TableContainer>
     </>
   );

@@ -40,14 +40,16 @@ export const Layout: FC<Props> = ({ children }) => {
         borderRadius="3xl"
         padding={6}
       >
-        <IconButton
-          aria-label="Menu Colapse"
-          icon={<HamburgerIcon />}
-          position="absolute"
-          top={6}
-          left={6}
-          onClick={() => setCollapse(!collapse)}
-        />
+        <Flex gap={4}>
+          <IconButton
+            aria-label="Menu Colapse"
+            icon={<HamburgerIcon />}
+            position="absolute"
+            top={6}
+            left={6}
+            onClick={() => setCollapse(!collapse)}
+          />
+        </Flex>
 
         {children}
       </Flex>

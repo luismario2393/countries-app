@@ -12,12 +12,8 @@ const Home = () => {
         <Spinner size="xl" />
       ) : (
         <>
-          <Table
-            countries={countries}
-            onOpen={onOpen}
-            fetchCountry={fetchCountry}
-          />
-          <Modal isOpen={isOpen} onClose={onClose} country={country} />
+          <Table data={countries} onOpen={onOpen} fetchCountry={fetchCountry} />
+          <Modal isOpen={isOpen} onClose={onClose} data={country} />
         </>
       )}
     </Layout>

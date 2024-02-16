@@ -9,18 +9,21 @@ import {
   Dispatch,
   useEffect,
 } from "react";
-import { getCountries, getCountry } from "../api";
-import { ICountries, ICountry } from "../interface";
+import { getCountries, getCountry, getState, getStates } from "../api";
+import { IData, IDataSingle } from "../interface";
 
 interface CountriesContextType {
   collapse: boolean;
   setCollapse: Dispatch<boolean>;
   activeItem: number;
   setActiveItem: Dispatch<number>;
-  countries: ICountries[];
+  countries: IData[];
+  states: IData[];
   loading: boolean;
   fetchCountry: (iso2: string) => Promise<void>;
-  country: ICountry | null;
+  country: IDataSingle | null;
+  fetchState: (countryCode: string, iso2: string) => Promise<void>;
+  state: IDataSingle | null;
 }
 
 const CountriesContext = createContext<CountriesContextType>(
@@ -40,9 +43,11 @@ interface CountriesProviderProps {
 export const CountriesProvider: FC<CountriesProviderProps> = ({ children }) => {
   const [collapse, setCollapse] = useState<boolean>(false);
   const [activeItem, setActiveItem] = useState<number>(0);
-  const [countries, setCountries] = useState<ICountries[]>([]);
+  const [countries, setCountries] = useState<IData[]>([]);
+  const [states, setStates] = useState<IData[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [country, setCountry] = useState<ICountry | null>(null);
+  const [country, setCountry] = useState<IDataSingle | null>(null);
+  const [state, setState] = useState<IDataSingle | null>(null);
 
   const fetchCountries = useCallback(async () => {
     try {
@@ -68,11 +73,39 @@ export const CountriesProvider: FC<CountriesProviderProps> = ({ children }) => {
     }
   }, []);
 
+  const fetchStates = useCallback(async () => {
+    try {
+      setLoading(true);
+      const data = await getStates();
+      return data;
+    } catch (error) {
+      console.error("Error fetching countries", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const fetchState = useCallback(async (countryCode: string, iso2: string) => {
+    try {
+      setLoading(true);
+      const data = await getState(countryCode, iso2);
+      setState(data);
+    } catch (error) {
+      console.error("Error fetching countries", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     fetchCountries().then((data) => {
       setCountries(data);
     });
-  }, [fetchCountries]);
+
+    fetchStates().then((data) => {
+      setStates(data);
+    });
+  }, [fetchCountries, fetchStates]);
 
   const value = useMemo(() => {
     return {
@@ -84,8 +117,21 @@ export const CountriesProvider: FC<CountriesProviderProps> = ({ children }) => {
       loading,
       fetchCountry,
       country,
+      states,
+      fetchState,
+      state,
     };
-  }, [collapse, activeItem, countries, loading, fetchCountry, country]);
+  }, [
+    collapse,
+    activeItem,
+    countries,
+    loading,
+    fetchCountry,
+    country,
+    states,
+    fetchState,
+    state,
+  ]);
 
   return (
     <CountriesContext.Provider value={value}>
