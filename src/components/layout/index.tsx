@@ -8,7 +8,7 @@ interface Props {
   children: ReactNode;
 }
 
-const Layout: FC<Props> = ({ children }) => {
+export const Layout: FC<Props> = ({ children }) => {
   const { collapse, setCollapse } = useCountries();
 
   return (
@@ -54,5 +54,3 @@ const Layout: FC<Props> = ({ children }) => {
     </HStack>
   );
 };
-
-export default Layout;
