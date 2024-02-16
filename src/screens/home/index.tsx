@@ -1,9 +1,11 @@
 import {
+  Box,
   Button,
   Flex,
   Grid,
   GridItem,
   IconButton,
+  Input,
   List,
   ListIcon,
   ListItem,
@@ -143,114 +145,147 @@ const Home = () => {
       {loading ? (
         <Spinner size="xl" />
       ) : (
-        <TableContainer
-          overflowY={table.getRowModel().rows.length > 10 ? "scroll" : "hidden"}
-          w={"80%"}
-        >
-          <Table size="lg">
-            <Thead>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <Tr key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <Th
-                      isNumeric={header.id === "Id" ? true : false}
-                      key={header.id}
-                      textAlign={"center"}
-                      onClick={header.column.getToggleSortingHandler()}
-                    >
-                      {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
+        <>
+          {table
+            .getHeaderGroups()
+            .map((headerGroup) =>
+              headerGroup.headers.map((header) =>
+                header.column.getCanFilter() && header.id === "name" ? (
+                  <Input
+                    width={"50%"}
+                    type="text"
+                    value={(header.column.getFilterValue() ?? "") as string}
+                    onChange={(e) =>
+                      header.column.setFilterValue(e.target.value)
+                    }
+                    placeholder={`Busca el país por su nombre`}
+                  />
+                ) : null
+              )
+            )}
 
-                      {
-                        {
-                          asc: " 🔼",
-                          desc: " 🔽",
-                        }[header.column.getIsSorted().valueOf().toString()]
-                      }
-                    </Th>
-                  ))}
-                </Tr>
-              ))}
-            </Thead>
-            <Tbody>
-              {table.getRowModel().rows.map((row) => (
-                <Tr key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <Td key={cell.id} padding={3} textAlign={"center"}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </Td>
-                  ))}
-                </Tr>
-              ))}
-            </Tbody>
-          </Table>
-          <Grid templateColumns="repeat(3, 1fr)" gap={2} marginTop={3}>
-            <GridItem w="100%">
-              <Flex gap={2}>
-                {table.getCanPreviousPage() && (
-                  <>
-                    <IconButton
-                      aria-label="previous all page"
-                      icon={<ArrowLeftIcon />}
-                      onClick={() => table.setPageIndex(0)}
-                      disabled={!table.getCanPreviousPage()}
-                    />
-                    <IconButton
-                      aria-label="previous page"
-                      icon={<ChevronLeftIcon />}
-                      onClick={() => table.previousPage()}
-                      disabled={!table.getCanPreviousPage()}
-                    />
-                  </>
-                )}
+          <TableContainer
+            overflowY={
+              table.getRowModel().rows.length > 10 ? "scroll" : "hidden"
+            }
+            w={"80%"}
+          >
+            <Table size="lg">
+              <Thead>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <Tr key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                      <Th
+                        isNumeric={header.id === "Id" ? true : false}
+                        key={header.id}
+                        textAlign={"center"}
+                      >
+                        <Flex
+                          flexDirection={"column"}
+                          alignItems={"center"}
+                          gap={2}
+                        >
+                          <Box
+                            onClick={header.column.getToggleSortingHandler()}
+                          >
+                            {flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
 
-                {table.getCanNextPage() && (
-                  <>
-                    <IconButton
-                      aria-label="next page"
-                      icon={<ChevronRightIcon />}
-                      onClick={() => table.nextPage()}
-                    />
-                    <IconButton
-                      aria-label="next all page"
-                      icon={<ArrowRightIcon />}
-                      onClick={() =>
-                        table.setPageIndex(table.getPageCount() - 1)
-                      }
-                    />
-                  </>
-                )}
-              </Flex>
-            </GridItem>
-            <GridItem w="100%">
-              <Text fontSize={14}>Page</Text>
-
-              <Text fontWeight="bold" fontSize={14}>
-                {table.getState().pagination.pageIndex + 1} of{" "}
-                {table.getPageCount()}
-              </Text>
-            </GridItem>
-            <GridItem w="100%">
-              <Select
-                value={table.getState().pagination.pageSize}
-                onChange={(e) => {
-                  table.setPageSize(Number(e.target.value));
-                }}
-              >
-                {[10, 20, 30, 40, 50].map((pageSize) => (
-                  <option key={pageSize} value={pageSize}>
-                    Show {pageSize}
-                  </option>
+                            {
+                              {
+                                asc: " 🔼",
+                                desc: " 🔽",
+                              }[
+                                header.column.getIsSorted().valueOf().toString()
+                              ]
+                            }
+                          </Box>
+                        </Flex>
+                      </Th>
+                    ))}
+                  </Tr>
                 ))}
-              </Select>
-            </GridItem>
-          </Grid>
-        </TableContainer>
+              </Thead>
+              <Tbody>
+                {table.getRowModel().rows.map((row) => (
+                  <Tr key={row.id}>
+                    {row.getVisibleCells().map((cell) => (
+                      <Td key={cell.id} padding={2} textAlign={"center"}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </Td>
+                    ))}
+                  </Tr>
+                ))}
+              </Tbody>
+            </Table>
+            <Grid templateColumns="repeat(3, 1fr)" gap={2} marginTop={3}>
+              <GridItem w="100%">
+                <Flex gap={2}>
+                  {table.getCanPreviousPage() && (
+                    <>
+                      <IconButton
+                        aria-label="previous all page"
+                        icon={<ArrowLeftIcon />}
+                        onClick={() => table.setPageIndex(0)}
+                        disabled={!table.getCanPreviousPage()}
+                      />
+                      <IconButton
+                        aria-label="previous page"
+                        icon={<ChevronLeftIcon />}
+                        onClick={() => table.previousPage()}
+                        disabled={!table.getCanPreviousPage()}
+                      />
+                    </>
+                  )}
+
+                  {table.getCanNextPage() && (
+                    <>
+                      <IconButton
+                        aria-label="next page"
+                        icon={<ChevronRightIcon />}
+                        onClick={() => table.nextPage()}
+                      />
+                      <IconButton
+                        aria-label="next all page"
+                        icon={<ArrowRightIcon />}
+                        onClick={() =>
+                          table.setPageIndex(table.getPageCount() - 1)
+                        }
+                      />
+                    </>
+                  )}
+                </Flex>
+              </GridItem>
+              <GridItem w="100%">
+                <Text fontSize={14}>Page</Text>
+
+                <Text fontWeight="bold" fontSize={14}>
+                  {table.getState().pagination.pageIndex + 1} of{" "}
+                  {table.getPageCount()}
+                </Text>
+              </GridItem>
+              <GridItem w="100%">
+                <Select
+                  value={table.getState().pagination.pageSize}
+                  onChange={(e) => {
+                    table.setPageSize(Number(e.target.value));
+                  }}
+                >
+                  {[10, 20, 30, 40, 50].map((pageSize) => (
+                    <option key={pageSize} value={pageSize}>
+                      Show {pageSize}
+                    </option>
+                  ))}
+                </Select>
+              </GridItem>
+            </Grid>
+          </TableContainer>
+        </>
       )}
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
