@@ -32,11 +32,13 @@ import { useCountries } from "../../context";
 import {
   useReactTable,
   getCoreRowModel,
-  // getFilteredRowModel,
+  getFilteredRowModel,
+  getSortedRowModel,
   getPaginationRowModel,
   ColumnDef,
   flexRender,
   PaginationState,
+  SortingState,
 } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
 import { ICountries } from "../../interface";
@@ -54,6 +56,7 @@ import { TbWorldLatitude, TbWorldLongitude, TbWorld } from "react-icons/tb";
 import { MdOutlinePhone } from "react-icons/md";
 
 const Home = () => {
+  const [sorting, setSorting] = useState<SortingState>([]);
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
@@ -61,25 +64,41 @@ const Home = () => {
   const { countries, loading, fetchCountry, country } = useCountries();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  console.log(country);
-
   const columns = useMemo<ColumnDef<ICountries>[]>(
     () => [
       {
         accessorKey: "id",
-        header: () => <span>Ids</span>,
+        header: () => {
+          return (
+            <Tooltip label="Click para reordenar">
+              <span>Id</span>
+            </Tooltip>
+          );
+        },
         cell: (info) => info.getValue(),
         footer: (props) => props.column.id,
       },
       {
         accessorKey: "name",
-        header: () => <span>Nombre de países</span>,
+        header: () => {
+          return (
+            <Tooltip label="Click para reordenar">
+              <span>Nombre de países</span>
+            </Tooltip>
+          );
+        },
         cell: (info) => info.getValue(),
         footer: (props) => props.column.id,
       },
       {
         accessorKey: "iso2",
-        header: () => <span>Indicativo</span>,
+        header: () => {
+          return (
+            <Tooltip label="Click para reordenar">
+              <span>Indicativo</span>
+            </Tooltip>
+          );
+        },
         cell: (info) => info.getValue(),
         footer: (props) => props.column.id,
       },
@@ -107,12 +126,15 @@ const Home = () => {
     data: countries,
     columns,
     state: {
+      sorting,
       pagination,
     },
     onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
-    // getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    onSortingChange: setSorting,
     debugTable: true,
   });
 
@@ -134,11 +156,19 @@ const Home = () => {
                       isNumeric={header.id === "Id" ? true : false}
                       key={header.id}
                       textAlign={"center"}
+                      onClick={header.column.getToggleSortingHandler()}
                     >
                       {flexRender(
                         header.column.columnDef.header,
                         header.getContext()
                       )}
+
+                      {
+                        {
+                          asc: " 🔼",
+                          desc: " 🔽",
+                        }[header.column.getIsSorted().valueOf().toString()]
+                      }
                     </Th>
                   ))}
                 </Tr>
