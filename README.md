@@ -29,7 +29,7 @@ npm run dev
 npm run build
 ```
 
-link: https://countries-app-jet-nine.vercel.app/
+- [Proyecto desplegado en vercel](https://countries-app-jet-nine.vercel.app/)
 
 ## Instrucciones para el uso de la app
 
