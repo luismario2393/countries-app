@@ -1,8 +1,19 @@
 import {
+  Button,
   Flex,
   Grid,
   GridItem,
   IconButton,
+  List,
+  ListIcon,
+  ListItem,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   Select,
   Spinner,
   Table,
@@ -10,17 +21,18 @@ import {
   Tbody,
   Td,
   Text,
-  Tfoot,
   Th,
   Thead,
+  Tooltip,
   Tr,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { Layout } from "../../components";
 import { useCountries } from "../../context";
 import {
   useReactTable,
   getCoreRowModel,
-  getFilteredRowModel,
+  // getFilteredRowModel,
   getPaginationRowModel,
   ColumnDef,
   flexRender,
@@ -33,14 +45,23 @@ import {
   ArrowRightIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  InfoIcon,
 } from "@chakra-ui/icons";
+import { FaCity, FaMountainCity, FaTreeCity } from "react-icons/fa6";
+import { HiOutlineCurrencyDollar } from "react-icons/hi2";
+import { BiWorld } from "react-icons/bi";
+import { TbWorldLatitude, TbWorldLongitude, TbWorld } from "react-icons/tb";
+import { MdOutlinePhone } from "react-icons/md";
 
 const Home = () => {
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
   });
-  const { countries, loading } = useCountries();
+  const { countries, loading, fetchCountry, country } = useCountries();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  console.log(country);
 
   const columns = useMemo<ColumnDef<ICountries>[]>(
     () => [
@@ -62,8 +83,24 @@ const Home = () => {
         cell: (info) => info.getValue(),
         footer: (props) => props.column.id,
       },
+      {
+        accessorKey: "details",
+        header: () => <span>Detalle</span>,
+        cell: (info) => (
+          <Tooltip label={`Información adicional de ${info.row.original.name}`}>
+            <IconButton
+              aria-label="vew details"
+              icon={<InfoIcon />}
+              onClick={() =>
+                fetchCountry(info.row.original.iso2).finally(onOpen)
+              }
+            />
+          </Tooltip>
+        ),
+        footer: (props) => props.column.id,
+      },
     ],
-    []
+    [fetchCountry, onOpen]
   );
 
   const table = useReactTable({
@@ -92,19 +129,18 @@ const Home = () => {
             <Thead>
               {table.getHeaderGroups().map((headerGroup) => (
                 <Tr key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <Th
-                        isNumeric={header.id === "Id" ? true : false}
-                        key={header.id}
-                      >
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                      </Th>
-                    );
-                  })}
+                  {headerGroup.headers.map((header) => (
+                    <Th
+                      isNumeric={header.id === "Id" ? true : false}
+                      key={header.id}
+                      textAlign={"center"}
+                    >
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                    </Th>
+                  ))}
                 </Tr>
               ))}
             </Thead>
@@ -112,7 +148,7 @@ const Home = () => {
               {table.getRowModel().rows.map((row) => (
                 <Tr key={row.id}>
                   {row.getVisibleCells().map((cell) => (
-                    <Td key={cell.id}>
+                    <Td key={cell.id} padding={3} textAlign={"center"}>
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
@@ -186,6 +222,118 @@ const Home = () => {
           </Grid>
         </TableContainer>
       )}
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Información adicional sobre {country?.name}</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <List spacing={3}>
+              <ListItem>
+                <Flex alignItems={"center"} gap={1}>
+                  <ListIcon as={TbWorld} color="teal.300" />
+                  <Text fontWeight="bold" fontSize={14}>
+                    Nombre:
+                  </Text>{" "}
+                  <Text fontSize={14}>
+                    {country?.name} - {country?.native}
+                  </Text>
+                </Flex>
+              </ListItem>
+
+              <ListItem>
+                <Flex alignItems={"center"} gap={1}>
+                  <ListIcon as={FaCity} color="teal.300" />
+                  <Text fontWeight="bold" fontSize={14}>
+                    Capital:
+                  </Text>{" "}
+                  <Text fontSize={14}>{country?.capital}</Text>
+                </Flex>
+              </ListItem>
+
+              <ListItem>
+                <Flex alignItems={"center"} gap={1}>
+                  <ListIcon as={HiOutlineCurrencyDollar} color="teal.300" />
+                  <Text fontWeight="bold" fontSize={14}>
+                    Divisa:
+                  </Text>{" "}
+                  <Text fontSize={14}>
+                    {country?.currency_symbol} - {country?.currency} -{" "}
+                    {country?.currency_name}
+                  </Text>
+                </Flex>
+              </ListItem>
+
+              <ListItem>
+                <Flex alignItems={"center"} gap={1}>
+                  <ListIcon as={BiWorld} color="teal.300" />
+                  <Text fontWeight="bold" fontSize={14}>
+                    Iso:
+                  </Text>{" "}
+                  <Text fontSize={14}>
+                    {country?.iso2} - {country?.iso3}
+                  </Text>
+                </Flex>
+              </ListItem>
+
+              <ListItem>
+                <Flex alignItems={"center"} gap={1}>
+                  <ListIcon as={TbWorldLatitude} color="teal.300" />
+                  <Text fontWeight="bold" fontSize={14}>
+                    Latitud:
+                  </Text>{" "}
+                  <Text fontSize={14}>{country?.latitude}</Text>
+                </Flex>
+              </ListItem>
+
+              <ListItem>
+                <Flex alignItems={"center"} gap={1}>
+                  <ListIcon as={TbWorldLongitude} color="teal.300" />
+                  <Text fontWeight="bold" fontSize={14}>
+                    Longitud:
+                  </Text>{" "}
+                  <Text fontSize={14}>{country?.longitude}</Text>
+                </Flex>
+              </ListItem>
+
+              <ListItem>
+                <Flex alignItems={"center"} gap={1}>
+                  <ListIcon as={MdOutlinePhone} color="teal.300" />
+                  <Text fontWeight="bold" fontSize={14}>
+                    Código de país:
+                  </Text>{" "}
+                  <Text fontSize={14}>{country?.phonecode}</Text>
+                </Flex>
+              </ListItem>
+
+              <ListItem>
+                <Flex alignItems={"center"} gap={1}>
+                  <ListIcon as={FaMountainCity} color="teal.300" />
+                  <Text fontWeight="bold" fontSize={14}>
+                    Region:
+                  </Text>{" "}
+                  <Text fontSize={14}>{country?.region}</Text>
+                </Flex>
+              </ListItem>
+
+              <ListItem>
+                <Flex alignItems={"center"} gap={1}>
+                  <ListIcon as={FaTreeCity} color="teal.300" />
+                  <Text fontWeight="bold" fontSize={14}>
+                    Subregion:
+                  </Text>{" "}
+                  <Text fontSize={14}>{country?.subregion}</Text>
+                </Flex>
+              </ListItem>
+            </List>
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="teal" mr={3} onClick={onClose}>
+              Close
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Layout>
   );
 };
