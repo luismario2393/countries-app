@@ -11,6 +11,10 @@ This is a template for React + TypeScript + Vite + Chakra UI + TanStack.
 - [TanStack](https://tanstack.com/)
 - [axios](https://axios-http.com/)
 
+## Api
+
+- [Country state city](https://countrystatecity.in/docs/api/state/)
+
 ## run the project
 
 ```bash
@@ -33,6 +37,8 @@ link: https://countries-app-jet-nine.vercel.app/
   reordena la lista en manera ascendente y descendente
 - Al presionar los botones en la columna detalles sale información
   adicional del país o el estado por medio de un modal
+- En la parte superior se puede observar un input que permite
+  buscar por nombre, ya sea del país o del estado
 - En la parte inferior izquierda se encuentran los botos de pasar de
   página, de una en una o pasar al final o al principio
 - En la parte inferior derecha se encuentra la cantidad de
