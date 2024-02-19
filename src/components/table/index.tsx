@@ -163,8 +163,11 @@ export const Table: FC<Props> = ({
         )
       )}
       <TableContainer
-        overflowY={table.getRowModel().rows.length > 10 ? "scroll" : "hidden"}
+        overflowY={"scroll"}
         w={"80%"}
+        style={{
+          scrollbarWidth: "thin",
+        }}
       >
         <ChakraTable size="lg">
           <Thead>
