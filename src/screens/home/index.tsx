@@ -13,6 +13,7 @@ const Home = () => {
       ) : (
         <>
           <Table data={countries} onOpen={onOpen} fetchCountry={fetchCountry} />
+
           <Modal isOpen={isOpen} onClose={onClose} data={country} />
         </>
       )}

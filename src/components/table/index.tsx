@@ -122,7 +122,8 @@ export const Table: FC<Props> = ({
   const table = useReactTable({
     data: data,
     columns,
-    // columnResizeMode: "onChange",
+    columnResizeMode: "onChange",
+    columnResizeDirection: "ltr",
     state: {
       sorting,
       pagination,
@@ -136,12 +137,18 @@ export const Table: FC<Props> = ({
     debugTable: true,
   });
 
+  const tableMemo = useMemo(() => table, [table]);
+
   return (
     <>
-      {table.getHeaderGroups().map((headerGroup) =>
+      {tableMemo.getHeaderGroups().map((headerGroup) =>
         headerGroup.headers.map((header) =>
           header.column.getCanFilter() && header.id === "name" ? (
-            <Flex gap={4}>
+            <Flex
+              gap={4}
+              key={`${header.id} - ${header.column.id}`}
+              marginBottom={4}
+            >
               <Tooltip label={`Instrucciones de uso`}>
                 <IconButton
                   aria-label="instructions"
@@ -150,7 +157,6 @@ export const Table: FC<Props> = ({
                 />
               </Tooltip>
               <Input
-                key={`${header.id} - ${header.column.id}`}
                 type="text"
                 value={(header.column.getFilterValue() ?? "") as string}
                 onChange={(e) => header.column.setFilterValue(e.target.value)}
@@ -166,14 +172,21 @@ export const Table: FC<Props> = ({
       )}
       <TableContainer
         overflowY={"scroll"}
-        w={"80%"}
         style={{
           scrollbarWidth: "thin",
         }}
       >
-        <ChakraTable size="lg" variant="striped">
+        <ChakraTable
+          size="lg"
+          variant="striped"
+          {...{
+            style: {
+              width: tableMemo.getCenterTotalSize(),
+            },
+          }}
+        >
           <Thead>
-            {table.getHeaderGroups().map((headerGroup) => (
+            {tableMemo.getHeaderGroups().map((headerGroup) => (
               <Tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
@@ -181,13 +194,21 @@ export const Table: FC<Props> = ({
                       isNumeric={header.id === "Id" ? true : false}
                       key={header.id}
                       textAlign={"center"}
+                      {...{
+                        style: {
+                          width: header.getSize(),
+                        },
+                      }}
                     >
                       <Flex
                         flexDirection={"column"}
                         alignItems={"center"}
                         gap={2}
                       >
-                        <Box onClick={header.column.getToggleSortingHandler()}>
+                        <Box
+                          cursor={"pointer"}
+                          onClick={header.column.getToggleSortingHandler()}
+                        >
                           {flexRender(
                             header.column.columnDef.header,
                             header.getContext()
@@ -201,6 +222,16 @@ export const Table: FC<Props> = ({
                             }[header.column.getIsSorted().valueOf().toString()]
                           }
                         </Box>
+                        <Box
+                          onDoubleClick={() => header.column.resetSize()}
+                          onMouseDown={header.getResizeHandler()}
+                          onAbort={header.getResizeHandler()}
+                          className={`resizer ${
+                            tableMemo.options.columnResizeDirection
+                          } ${
+                            header.column.getIsResizing() ? "isResizing" : ""
+                          }`}
+                        />
                       </Flex>
                     </Th>
                   );
@@ -209,7 +240,7 @@ export const Table: FC<Props> = ({
             ))}
           </Thead>
           <Tbody>
-            {table.getRowModel().rows.map((row) => (
+            {tableMemo.getRowModel().rows.map((row) => (
               <Tr key={row.id}>
                 {row.getVisibleCells().map((cell) => (
                   <Td key={cell.id} padding={2} textAlign={"center"}>
@@ -220,7 +251,7 @@ export const Table: FC<Props> = ({
             ))}
           </Tbody>
         </ChakraTable>
-        <Pagination table={table} />
+        <Pagination table={tableMemo} />
 
         <ModalInstruction isOpen={isOpen} onClose={onClose} />
       </TableContainer>
