@@ -54,7 +54,7 @@ interface TableProps {
   fetchState?: (countryCode: string, iso2: string) => Promise<void>;
 }
 
-export const Table: FC<TableProps> = ({
+export const TableCopy: FC<TableProps> = ({
   data,
   onOpen,
   fetchCountry,
