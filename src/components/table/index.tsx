@@ -45,6 +45,7 @@ export const Table: FC<Props> = ({
   fetchState,
 }) => {
   const [sorting, setSorting] = useState<SortingState>([]);
+
   const { isOpen, onOpen: useOnOpen, onClose } = useDisclosure();
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -121,6 +122,7 @@ export const Table: FC<Props> = ({
   const table = useReactTable({
     data: data,
     columns,
+    // columnResizeMode: "onChange",
     state: {
       sorting,
       pagination,
@@ -169,37 +171,40 @@ export const Table: FC<Props> = ({
           scrollbarWidth: "thin",
         }}
       >
-        <ChakraTable size="lg">
+        <ChakraTable size="lg" variant="striped">
           <Thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <Tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <Th
-                    isNumeric={header.id === "Id" ? true : false}
-                    key={header.id}
-                    textAlign={"center"}
-                  >
-                    <Flex
-                      flexDirection={"column"}
-                      alignItems={"center"}
-                      gap={2}
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <Th
+                      isNumeric={header.id === "Id" ? true : false}
+                      key={header.id}
+                      textAlign={"center"}
                     >
-                      <Box onClick={header.column.getToggleSortingHandler()}>
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                      <Flex
+                        flexDirection={"column"}
+                        alignItems={"center"}
+                        gap={2}
+                      >
+                        <Box onClick={header.column.getToggleSortingHandler()}>
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
 
-                        {
                           {
-                            asc: " 🔼",
-                            desc: " 🔽",
-                          }[header.column.getIsSorted().valueOf().toString()]
-                        }
-                      </Box>
-                    </Flex>
-                  </Th>
-                ))}
+                            {
+                              asc: " 🔼",
+                              desc: " 🔽",
+                              false: " 🔼🔽",
+                            }[header.column.getIsSorted().valueOf().toString()]
+                          }
+                        </Box>
+                      </Flex>
+                    </Th>
+                  );
+                })}
               </Tr>
             ))}
           </Thead>
