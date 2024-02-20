@@ -27,19 +27,6 @@ export const DraggableTableHeader: FC<Props> = ({ header, table }) => {
     zIndex: isDragging ? 1 : 0,
   };
 
-  // <Th colSpan={header.colSpan} ref={setNodeRef} style={style}>
-  //     {header.isPlaceholder
-  //       ? null
-  //       : flexRender(header.column.columnDef.header, header.getContext())}
-  // <IconButton
-  //   variant={"ghost"}
-  //   colorScheme="teal"
-  //   {...attributes}
-  //   {...listeners}
-  //   icon={<DragHandleIcon />}
-  // />;
-  // //   </Th>
-
   return (
     <Th
       colSpan={header.colSpan}
@@ -73,6 +60,7 @@ export const DraggableTableHeader: FC<Props> = ({ header, table }) => {
           }`}
         />
         <IconButton
+          aria-label="drag"
           variant={"ghost"}
           colorScheme="teal"
           {...attributes}
