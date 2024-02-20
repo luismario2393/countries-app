@@ -42,6 +42,17 @@ export const ModalInstruction: FC<Props> = ({ isOpen, onClose }) => {
               En la parte inferior derecha se encuentra la cantidad de
               resultados que se quiere mostrar por página{" "}
             </ListItem>
+            <ListItem>
+              Se puede hacer Drag and drop arrastrando las columnas en el botón
+              el icono drag{" "}
+            </ListItem>
+            <ListItem>
+              Modifica el tamaño de las columnas colocando el mouse en el borde
+              de la columna y arrastrando
+            </ListItem>
+            <ListItem>
+              Filtra por cada una de las columnas que tienen valor.
+            </ListItem>
           </UnorderedList>
         </ModalBody>
         <ModalFooter>

@@ -3,8 +3,9 @@ import { IData } from "../../interface";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSSProperties, FC } from "react";
 import { CSS } from "@dnd-kit/utilities";
-import { Box, Flex, IconButton, Th } from "@chakra-ui/react";
+import { Box, Flex, IconButton, Th, Tooltip } from "@chakra-ui/react";
 import { DragHandleIcon } from "@chakra-ui/icons";
+import { Filter } from "./filter";
 
 interface Props {
   header: Header<IData, unknown>;
@@ -27,6 +28,8 @@ export const DraggableTableHeader: FC<Props> = ({ header, table }) => {
     zIndex: isDragging ? 1 : 0,
   };
 
+  const showFiltersAndOrders = header.column.id !== "details";
+
   return (
     <Th
       colSpan={header.colSpan}
@@ -43,13 +46,12 @@ export const DraggableTableHeader: FC<Props> = ({ header, table }) => {
         >
           {flexRender(header.column.columnDef.header, header.getContext())}
 
-          {
+          {showFiltersAndOrders &&
             {
               asc: " 🔼",
               desc: " 🔽",
               false: " 🔼🔽",
-            }[header.column.getIsSorted().valueOf().toString()]
-          }
+            }[header.column.getIsSorted().valueOf().toString()]}
         </Box>
         <Box
           onDoubleClick={() => header.column.resetSize()}
@@ -59,15 +61,25 @@ export const DraggableTableHeader: FC<Props> = ({ header, table }) => {
             header.column.getIsResizing() ? "isResizing" : ""
           }`}
         />
-        <IconButton
-          aria-label="drag"
-          variant={"ghost"}
-          colorScheme="teal"
-          {...attributes}
-          {...listeners}
-          icon={<DragHandleIcon />}
-        />
+        <Tooltip
+          label="Reordena las columnas arrastrando"
+          aria-label="Drag to reorder"
+        >
+          <IconButton
+            aria-label="drag"
+            variant={"ghost"}
+            colorScheme="teal"
+            {...attributes}
+            {...listeners}
+            icon={<DragHandleIcon />}
+          />
+        </Tooltip>
       </Flex>
+      {header.column.getCanFilter() && showFiltersAndOrders ? (
+        <Box>
+          <Filter column={header.column} table={table} />
+        </Box>
+      ) : null}
     </Th>
   );
 };
