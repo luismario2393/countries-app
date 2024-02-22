@@ -3,6 +3,7 @@ import { TbWorld } from "react-icons/tb";
 import { GiModernCity } from "react-icons/gi";
 import { NavItem } from "./navitems";
 import { useCountries } from "../../context";
+import { MdOutlineGroupAdd } from "react-icons/md";
 
 const items = [
   {
@@ -16,6 +17,12 @@ const items = [
     label: "States",
     icon: GiModernCity,
     path: "/states",
+  },
+  {
+    type: "link",
+    label: "Create Group",
+    icon: MdOutlineGroupAdd,
+    path: "/create-group",
   },
 ];
 

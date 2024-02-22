@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Home, States } from "./screens";
+import { Home, States, CreateGroup } from "./screens";
 
 function App() {
   return (
@@ -8,6 +8,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/states" element={<States />} />
+          <Route path="/create-group" element={<CreateGroup />} />
         </Routes>
       </BrowserRouter>
     </>

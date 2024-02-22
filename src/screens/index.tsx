@@ -1,4 +1,5 @@
 import Home from "./home";
 import States from "./states";
+import CreateGroup from "./create-group";
 
-export { Home, States };
+export { Home, States, CreateGroup };
