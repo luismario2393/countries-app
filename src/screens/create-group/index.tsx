@@ -106,15 +106,18 @@ const CreateGroup = () => {
                   )}
                 </Field>
 
-                <Button
-                  mt={4}
-                  colorScheme="blue"
-                  isLoading={props.isSubmitting}
-                  type="submit"
-                  w={"20%"}
-                >
-                  Create a new group
-                </Button>
+                <Box>
+                  <Button
+                    mt={4}
+                    colorScheme={"blue"}
+                    isLoading={props.isSubmitting}
+                    type="submit"
+                    fontSize={14}
+                    padding={"21px 28px"}
+                  >
+                    Create a new group
+                  </Button>
+                </Box>
               </Form>
             );
           }}
